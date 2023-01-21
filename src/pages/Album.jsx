@@ -3,12 +3,15 @@ import { PropTypes } from 'prop-types';
 import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import MusicCard from '../components/MusicCard';
+import { addSong, readFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
+import Loading from '../components/Loading';
 
 export default class Album extends Component {
   state = {
     musics: [],
     artist: '',
     albumName: '',
+    isLoading: false,
   };
 
   async componentDidMount() {
@@ -22,25 +25,48 @@ export default class Album extends Component {
     });
   }
 
+  favoriteSong = (e, music) => {
+    const { checked } = e;
+    if (checked) {
+      this.setState({ isLoading: true }, async () => {
+        await addSong(music);
+        this.setState({ isLoading: false });
+      });
+    } else {
+      this.setState({ isLoading: true }, async () => {
+        await removeSong(music);
+        this.setState({ isLoading: false });
+      });
+    }
+  };
+
+  isChecked = (songId) => {
+    const favoriteSongs = readFavoriteSongs();
+    return favoriteSongs.some(({ trackId }) => songId === trackId);
+  };
+
   render() {
-    const { artist, musics, albumName } = this.state;
+    const { artist, musics, albumName, isLoading } = this.state;
     return (
       <div data-testid="page-album">
         <Header />
-        <p data-testid="artist-name">{artist}</p>
-        <p data-testid="album-name">{albumName}</p>
-        {
-          musics.map((music, index) => {
-            if (index === 0) {
-              return false;
+        { isLoading ? <Loading /> : (
+          <>
+            <p data-testid="artist-name">{artist}</p>
+            <p data-testid="album-name">{albumName}</p>
+            {
+              musics
+                .filter((music, index) => index > 0)
+                .map((music) => (<MusicCard
+                  key={ music.trackId }
+                  { ...music }
+                  musicObj={ music }
+                  favoriteSong={ this.favoriteSong }
+                  isChecked={ this.isChecked }
+                />))
             }
-            return (<MusicCard
-              key={ music.trackId }
-              preview={ music.previewUrl }
-              musicName={ music.trackName }
-            />);
-          })
-        }
+          </>
+        )}
       </div>
     );
   }

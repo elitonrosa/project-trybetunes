@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 
 export default class AlbumCard extends Component {
   render() {
-    const album = this.props;
-    const { artworkUrl100, collectionName, artistName, collectionId } = album;
+    const { artworkUrl100, collectionName, artistName, collectionId } = this.props;
     return (
       <div>
         <img src={ artworkUrl100 } alt={ collectionName } />
@@ -13,7 +12,7 @@ export default class AlbumCard extends Component {
         <p>{ artistName }</p>
         <Link
           to={ `/album/${collectionId}` }
-          data-testid={ `link-to-album-${String(collectionId)}` }
+          data-testid={ `link-to-album-${collectionId}` }
         >
           Detalhes do Album
         </Link>
@@ -26,5 +25,5 @@ AlbumCard.propTypes = {
   artworkUrl100: PropTypes.string.isRequired,
   collectionName: PropTypes.string.isRequired,
   artistName: PropTypes.string.isRequired,
-  collectionId: PropTypes.string.isRequired,
+  collectionId: PropTypes.number.isRequired,
 };

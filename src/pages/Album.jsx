@@ -3,7 +3,12 @@ import { PropTypes } from 'prop-types';
 import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import MusicCard from '../components/MusicCard';
-import { addSong, readFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
+import {
+  addSong,
+  getFavoriteSongs,
+  readFavoriteSongs,
+  removeSong,
+} from '../services/favoriteSongsAPI';
 import Loading from '../components/Loading';
 
 export default class Album extends Component {
@@ -18,6 +23,7 @@ export default class Album extends Component {
     const { match } = this.props;
     const { id } = match.params;
     const musics = await getMusics(id);
+    getFavoriteSongs();
     this.setState({
       musics,
       artist: musics[0].artistName,
@@ -41,8 +47,8 @@ export default class Album extends Component {
   };
 
   isChecked = (songId) => {
-    const favoriteSongs = readFavoriteSongs();
-    return favoriteSongs.some(({ trackId }) => songId === trackId);
+    const favoriteMusics = readFavoriteSongs();
+    return favoriteMusics.some(({ trackId }) => songId === trackId);
   };
 
   render() {

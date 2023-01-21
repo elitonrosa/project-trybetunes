@@ -36,6 +36,7 @@ export default class Album extends Component {
     if (checked) {
       this.setState({ isLoading: true }, async () => {
         await addSong(music);
+        getFavoriteSongs();
         this.setState({ isLoading: false });
       });
     } else {
